@@ -65,6 +65,9 @@ load('/home/kristof/berg/FLEXPART_10.02/grid_data/fine_FLEXPART_grid.mat')
 % transpose of age array
 load('/home/kristof/berg/FLEXPART_10.02/grid_data/FP_fine_mask.mat')
 
+% flexpart times
+load('/home/kristof/berg/FLEXPART_10.02/BrO_back_runs_v1/flexpart_times_2015-2019.mat')
+
 % convert to 0-360, east of Greenwich
 longitude(longitude<0)=longitude(longitude<0)+360;
 lon_age(lon_age<0)=lon_age(lon_age<0)+360;
@@ -72,7 +75,7 @@ lon_age(lon_age<0)=lon_age(lon_age<0)+360;
 % switch FP grid center to 180 instead of 0
 lon_tmp=[longitude(359:end);longitude(1:358)];
 
-%% get FYSI contact
+%% get SI/water/land contact
 
 % initialize output array
 % FP_SI_contact=NaN(max(sens_info.run_index),1);
@@ -132,7 +135,7 @@ for i=1:size(sens_info,1)
         remove(SI_age_inds,SI_age_keys{1});
     end
     
-    %% calculate FYSI contact
+    %% calculate contact time
 
     SI_contact_mask=ismember(FP_fine_mask,SI_age_inds_current);
 
@@ -151,6 +154,17 @@ for i=1:size(sens_info,1)
     end
 
 end
+
+% save corresponding times (each back trajectory corresponds to BrO
+% profiles between run_start and run_end)
+tmp=table();
+
+tmp.run_times=run_times'; 
+tmp.run_start=run_start';
+tmp.run_end=run_end';
+tmp.contact=FP_SI_contact;
+
+FP_SI_contact=tmp;
 
 if age_yr==1
     save(['/home/kristof/work/BEEs/flexpart_SI_contact/FP_FYSI_contact_'...

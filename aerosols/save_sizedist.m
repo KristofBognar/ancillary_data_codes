@@ -6,9 +6,11 @@
 % Use newer version provided by Andy, the OPC numbers look correct here (in
 % Samantha's files the numbers were huge, probably a unit conversion issue)
 
-read_SMPS=0;
+cd('/home/kristof/work/SMPS/smps+opc+aps/')
+
+read_SMPS=1;
 read_OPC=0;
-read_APS=1;
+read_APS=0;
 
 if read_SMPS
     %% SMPS files
@@ -57,7 +59,7 @@ if read_SMPS
             smps_tot_data=[smps_tot_data; xlsread(filename,sheet,'B3:B43990')];
         elseif year==2018
             smps_tot_data=[smps_tot_data; xlsread(filename,sheet,'B3:B44138')];
-        elseif year==2018
+        elseif year==2019
             smps_tot_data=[smps_tot_data; xlsread(filename,sheet,'B3:B44107')];
         end
 
@@ -171,7 +173,7 @@ if read_APS
         fid = fopen([filename '_times.csv']);
         % Read all lines & collect in cell array
         txt = textscan(fid,'%s','delimiter','\n');
-        aps_time=[aps_time;datetime(txt{1}, 'InputFormat', 'dd/MM/yyyy HH:mm')];
+        aps_time=[aps_time;datetime(txt{1}, 'InputFormat', 'MM/dd/yyyy HH:mm')];
         fclose(fid);
         
         % Read size distribution data
