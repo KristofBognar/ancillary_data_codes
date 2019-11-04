@@ -1,12 +1,13 @@
 
 
 plot_data=1;
+year='2019';
 
-% check for water in the entire tile, or exclude nothert Baffin bay (often ice free)
-all_tile=0;
+% check for water in the entire tile (1), or exclude nothert Baffin bay (often ice free)
+all_tile=1;
 
 % load('/home/kristof/work/BEEs/sea_ice_data/MODIS_Eureka_all.mat')
-load('/home/kristof/atmosp_servers/net/corona/satellite/modis/MODIS_Eureka2015.mat')
+load(['/home/kristof/atmosp_servers/net/corona/satellite/modis/MODIS_Eureka' year '.mat'])
 
 % create new mask
 plot_SI=NaN(size(sea_ice));

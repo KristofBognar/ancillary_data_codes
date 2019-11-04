@@ -19,7 +19,7 @@ plotcol=3;
 
 load coast;
 
-wdir_key={'Wind: 354° \pm 30°','Wind: 123° \pm 30°','Wind: other'};
+wdir_key={'Wind: \bf{N}','Wind: \bf{SE}','Wind: \bf{other}'};
 
 flex_dir='/home/kristof/atmosp_servers/export/data/home/kbognar/FLEXPART_10.02/';
 flex_folder='BrO_back_runs_v1';
@@ -60,7 +60,7 @@ if ~read_backrun
         figure
         for i=1:num_plots
             subplot(plotrow,plotcol,i)
-            ax = worldmap([58,90], [-180,180]);
+            ax = worldmap([61,90], [-180,180]);
             geoshow(ax, lat, long,'DisplayType', 'polygon', 'FaceColor', [0.7,0.7,0.7])
             hold on
             title(wdir_key{i},'fontweight','normal','FontSize',19)
@@ -190,6 +190,7 @@ else
     
 end
 
+cd(cur_dir)
 
 % load coast;
 % % plot map
