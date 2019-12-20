@@ -86,10 +86,11 @@ SI_age_inds=containers.Map(1,age(:,:,1));
 
 n=0;
 for i=1:size(sens_info,1)
-
+    
     % display progress info
-    disp_str=['Processing FLEXPART run from ' datestr(trajectories.end_on(...
-              find(trajectories.index==sens_info.run_index(i),1)))];
+    disp_str=['Processing FLEXPART run ' num2str(i) '/' num2str(size(sens_info,1))...
+              ' (' datestr(trajectories.end_on(...
+              find(trajectories.index==sens_info.run_index(i),1))) ')'];
     % stuff to delete last line and reprint updated message
     fprintf(repmat('\b',1,n));
     fprintf(disp_str);
@@ -137,12 +138,45 @@ for i=1:size(sens_info,1)
     
     %% calculate contact time
 
-    SI_contact_mask=ismember(FP_fine_mask,SI_age_inds_current);
+    % linearize sens_fine and mask
+    sens_lin=sens_fine(:);
+    mask_lin=FP_fine_mask(:); % 3 cells from each corner of SI grid missing, doesn't matter here
+    
+    % select only mask indices that appear in SI_age_inds_current
+    SI_contact_mask=ismember(mask_lin,SI_age_inds_current);
+    % select only nonzero sensitivities
+    error('removing zero elements not essential, fix bugs if it''s to be included')
+    %#244 nonzero=sens_lin>0; % can only remove zeros if entilre SI grid cell is 0!!
 
-    % mean sensitivity over all FYSI covered regions x total FYSI area
-    % units: s m^2
-    SI_contact_tmp=mean(sens_fine(SI_contact_mask)) * ...
-                     (length(SI_age_inds_current)*12534^2 );
+    % reduce arrays to selected elements
+    mask_lin=mask_lin(SI_contact_mask & nonzero);
+    sens_lin=sens_lin(SI_contact_mask & nonzero);
+    
+    if ~isempty(sens_lin)
+
+        % redo indices in truncated mask such that unique elements start from
+        % 1, and increase with no gaps -- necessary for splitapply
+        [tmp,~,order]=unique(mask_lin);
+        tmp=1:length(tmp);
+        split_group=tmp(order)';
+
+        % calculate mean sensitivity in each grid cell of interest, then add the values
+        SI_contact_tmp=sum(splitapply(@mean,sens_lin,split_group));
+    else
+        % all cells with selected SI type have zero sensitivity
+        SI_contact_tmp=0;
+    end
+    
+% % %     error('Not a good way of calculating SI contact')
+% % %     (overall mean * number of cells) is only equal to sum(mean of eac
+% % %     cell) if each cell has the same number of points (not true here)
+% % %     
+% % %     SI_contact_mask=ismember(FP_fine_mask,SI_age_inds_current);
+% % % 
+% % %     % mean sensitivity over all FYSI covered regions x number of FYSI cells
+% % %     % units: s
+% % %     SI_contact_tmp=mean(sens_fine(SI_contact_mask)) * ...
+% % %                      (length(SI_age_inds_current) );
     
     %% save FYSI contact
     
@@ -152,7 +186,7 @@ for i=1:size(sens_info,1)
     else % if entire flexpart run is within one SI age timestep, save
         FP_SI_contact=[FP_SI_contact;SI_contact_tmp];
     end
-
+    
 end
 
 % save corresponding times (each back trajectory corresponds to BrO
