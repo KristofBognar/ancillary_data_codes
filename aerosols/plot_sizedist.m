@@ -1,68 +1,101 @@
-%%% plot size distributions from Eureka SMPS, alongside ridge lab wind data 
-%%% and PGBS BrO DSCDs
+%%% investigate particle formation events in spring
 
-% load('/home/kristof/work/SMPS/size_dist_0317.mat')
-load('/home/kristof/work/SMPS/size_dist.mat')
-% load rl_wind.mat
-% load('/home/kristof/work/GBS/PEARL-GBS/2016/MAX-DOAS/maxdoas_bro.mat')
+load('/home/kristof/work/SMPS/smps+opc+aps/smps_size_dist_all.mat');
 
-% limit=1300;
-limit=500;
-ind=find(Dp_data>limit);
-Dp_data(ind)=limit;
+load('/home/kristof/work/BEEs/BEE_dataset_all.mat')
+bee_dataset(bee_dataset.times.Year==2015,:)=[];
+prof_len=match_prof_length(bee_dataset.times);
+prof_len=prof_len/2;
 
-% contourf(Dp_data(2000:5000,:)')
-% imagesc(Dp_data')
+% up to 100: 32
+% up to 50: 22
+smps_sum=sum(smps_data(:,1:22),2);
+ind=find(smps_sum==0 | isnan(smps_sum) | smps_sum>1000);
 
-% convert time to ft, starting at 1 for Jan. 01, 00:00:00
-[~,t]=fracdate(time);
-% convert to days of March
-t=t+1-60; %2016
-% t=t+1-59; %2017
+smps_data(ind,:)=[];
+smps_time(ind)=[];
+smps_tot_data(ind)=[];
+smps_sum(ind)=[];
+smps_mean=find_coincident_mean(bee_dataset.times, smps_time, smps_sum, prof_len);
 
-% surf(Dp_data','EdgeColor','None', 'facecolor', 'interp')
-% xlim([1,size(Dp_data,1)])
-% ylim([1,54])
+figure
+plot(smps_time,smps_sum)
 
-% create numbered bins for plotting
-Dpbin=[1:size(Dp,2)];
+figure
+ind=~isnan(smps_mean);
+dscatter(smps_mean(ind),bee_dataset.bro_col(ind))
 
-% redefine time interval (x/y limits don't scale color plot)
-% % ind1=min(find(t>17));
-% % ind2=max(find(t<23));
-ind1=min(find(t>=19));
-ind2=max(find(t<=23));
-% ind1=min(find(t>=7));
-% ind2=max(find(t<=21));
-t=t(ind1:ind2);
-
-figure(1)
-% subplot(212);
-surf(t,Dpbin,Dp_data(ind1:ind2,:)','EdgeColor','None', 'facecolor', 'interp'), hold on
-% xlim([7,21.5])
-xlim([19,23])
-ylim([min(Dpbin),max(Dpbin)])
-ylabel('D_p (nm)')
-grid off
-
-% replace tick labels with particle diameter corresponding to given index
-% no point using Dp as y axis because bins are log spaced
-% xx=[5:5:50];
-xx=[1,10,23,33,42,54];
-xxlabel=[10,20,50,100,200,500];
-set(gca, 'YTick', xx)
-set(gca, 'YTicklabel', xxlabel)
-% set(gca, 'YTicklabel', Dp(xx))
-% xlabel('Days of March, 2017 (UTC)')
-
-% set view to see x-y plane from above
-view(2)
-colormap(jet(300))
-
-c=colorbar();
-ylabel(c,'dN/dlogD_p (cm^{-3})')
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
+% % %%% plot size distributions from Eureka SMPS, alongside ridge lab wind data 
+% % %%% and PGBS BrO DSCDs
+% % 
+% % % load('/home/kristof/work/SMPS/size_dist_0317.mat')
+% % load('/home/kristof/work/SMPS/size_dist.mat')
+% % % load rl_wind.mat
+% % % load('/home/kristof/work/GBS/PEARL-GBS/2016/MAX-DOAS/maxdoas_bro.mat')
+% % 
+% % % limit=1300;
+% % limit=500;
+% % ind=find(Dp_data>limit);
+% % Dp_data(ind)=limit;
+% % 
+% % % contourf(Dp_data(2000:5000,:)')
+% % % imagesc(Dp_data')
+% % 
+% % % convert time to ft, starting at 1 for Jan. 01, 00:00:00
+% % [~,t]=fracdate(time);
+% % % convert to days of March
+% % t=t+1-60; %2016
+% % % t=t+1-59; %2017
+% % 
+% % % surf(Dp_data','EdgeColor','None', 'facecolor', 'interp')
+% % % xlim([1,size(Dp_data,1)])
+% % % ylim([1,54])
+% % 
+% % % create numbered bins for plotting
+% % Dpbin=[1:size(Dp,2)];
+% % 
+% % % redefine time interval (x/y limits don't scale color plot)
+% % % % ind1=min(find(t>17));
+% % % % ind2=max(find(t<23));
+% % ind1=min(find(t>=19));
+% % ind2=max(find(t<=23));
+% % % ind1=min(find(t>=7));
+% % % ind2=max(find(t<=21));
+% % t=t(ind1:ind2);
+% % 
+% % figure(1)
+% % % subplot(212);
+% % surf(t,Dpbin,Dp_data(ind1:ind2,:)','EdgeColor','None', 'facecolor', 'interp'), hold on
+% % % xlim([7,21.5])
+% % xlim([19,23])
+% % ylim([min(Dpbin),max(Dpbin)])
+% % ylabel('D_p (nm)')
+% % grid off
+% % 
+% % % replace tick labels with particle diameter corresponding to given index
+% % % no point using Dp as y axis because bins are log spaced
+% % % xx=[5:5:50];
+% % xx=[1,10,23,33,42,54];
+% % xxlabel=[10,20,50,100,200,500];
+% % set(gca, 'YTick', xx)
+% % set(gca, 'YTicklabel', xxlabel)
+% % % set(gca, 'YTicklabel', Dp(xx))
+% % % xlabel('Days of March, 2017 (UTC)')
+% % 
+% % % set view to see x-y plane from above
+% % view(2)
+% % colormap(jet(300))
+% % 
+% % c=colorbar();
+% % ylabel(c,'dN/dlogD_p (cm^{-3})')
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
 % % subplot(211)
