@@ -84,15 +84,6 @@ if ~exist('dmean_bro','var')
     dmean_870(isnan(dmean_870.mean),:)=[];
 end
 
-% 
-% disp([mean(dmean_405.mean),mean(dmean_405.std)])
-% disp([mean(dmean_870.mean),mean(dmean_870.std)])
-% 
-% 
-% r2=corrcoef(dmean_870.mean(ind4),dmean_bro.mean(ind3));
-% 
-% disp([r1(1,2)^2,r2(1,2)^2])
-
 
 %% plot results
 figure
@@ -102,7 +93,7 @@ fig_ax = tight_subplot(2,2,[0.09,0.07],[0.08,0.08],[0.08,0.06]);
 % BrO vs interpolated PAX data
 axes(fig_ax(1))
 tmp=interp1(pax405.DateTime,pax405.BC_mass_conc,bee_dataset.times);
-ind=~isnan(tmp);
+ind=(~isnan(tmp) & bee_dataset.N_SE_rest==2);
 dscatter(tmp(ind),bee_dataset.bro_col(ind)), hold on
 xlim([-0.1,0.25])
 ylim([0,8]*1e13)
@@ -121,7 +112,8 @@ legend('Normalized density','BrO, PAX medians')
 
 axes(fig_ax(2))
 tmp=interp1(pax870.DateTime,pax870.BC_mass_conc,bee_dataset.times);
-ind=~isnan(tmp);
+% ind=~isnan(tmp);
+ind=(~isnan(tmp) & bee_dataset.N_SE_rest==2);
 dscatter(tmp(ind),bee_dataset.bro_col(ind)), hold on
 xlim([-0.1,0.25])
 ylim([0,8]*1e13)
@@ -139,7 +131,7 @@ plot([-0.1,0.25],[tmp,tmp],'k-')
 % daily mean values
 axes(fig_ax(3))
 [~,ind1,ind2]=intersect(dmean_bro.DateTime,dmean_405.DateTime);
-plot(dmean_405.mean(ind2),dmean_bro.mean(ind1),'b.','markersize',10)
+plot(dmean_405.mean(ind2),dmean_bro.mean(ind1),'b.','markersize',10), hold on
 xlim([0,0.14])
 ylim([0,8]*1e13)
 ylabel('Daily mean BrO part. col. (molec/cm^2)')
@@ -149,10 +141,15 @@ r2=r2(1,2)^2;
 text(0.05,0.93,['R^2 = ' num2str(round(r2,2))],'color','k','Units','normalized')
 box on
 grid on
+tmp=median(dmean_405.mean(ind2));
+plot([tmp,tmp],[0,8]*1e13,'k-')
+tmp=median(dmean_bro.mean(ind1));
+plot([0,0.14],[tmp,tmp],'k-')
+legend('Daily mean values','Medians of daily mean data')
 
 axes(fig_ax(4))
 [~,ind3,ind4]=intersect(dmean_bro.DateTime,dmean_870.DateTime);
-plot(dmean_870.mean(ind4),dmean_bro.mean(ind3),'b.','markersize',10)
+plot(dmean_870.mean(ind4),dmean_bro.mean(ind3),'b.','markersize',10), hold on
 xlim([0,0.14])
 ylim([0,8]*1e13)
 xlabel('Daily mean PAX870 BC (\mug/m^3)')
@@ -161,7 +158,20 @@ r2=r2(1,2)^2;
 text(0.05,0.93,['R^2 = ' num2str(round(r2,2))],'color','k','Units','normalized')
 box on
 grid on
+tmp=median(dmean_870.mean(ind4));
+plot([tmp,tmp],[0,8]*1e13,'k-')
+tmp=median(dmean_bro.mean(ind3));
+plot([0,0.14],[tmp,tmp],'k-')
 
-
+% figure
+% subplot(121)
+% pax405(isnan(pax405.BC_mass_conc),:)=[];
+% pax870(isnan(pax870.BC_mass_conc),:)=[];
+% [~,ind1,ind2]=intersect(pax405.DateTime,pax870.DateTime);
+% dscatter(pax405.BC_mass_conc(ind1),pax870.BC_mass_conc(ind2))
+% 
+% subplot(122)
+% [~,ind1,ind2]=intersect(dmean_405.DateTime,dmean_870.DateTime);
+% plot(dmean_405.mean(ind1),dmean_870.mean(ind2),'b.','markersize',10)
 
 
