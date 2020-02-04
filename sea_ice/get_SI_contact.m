@@ -1,4 +1,4 @@
-function get_SI_contact(bt_len,age_yr)
+function get_SI_contact(bt_len,age_yr,fp_version)
 %get_SI_contact(age_yr) total sea ice contact for FLEXPART back
 %trajectories based on EASE-grid sea ice age data
 %
@@ -12,6 +12,7 @@ function get_SI_contact(bt_len,age_yr)
 %           2 -- multi-year sea ice
 %           0 -- open water (excluding ocean mask in SI age data)
 %          20 -- land (using land mask in SI age data)
+%        fp_version: folder name of current FLEXPART run version (e.g. 'BrO_back_runs_v2')
 %
 % OUTPUT: file with vector of contact times in s m^2, corresponding to the
 %         number of FLEXPART runs. Naming is FYSI, MYSI, water, and land,
@@ -35,7 +36,10 @@ function get_SI_contact(bt_len,age_yr)
 % @Kristof Bognar, 2019
 
 
-if nargin==1, age_yr=1; end
+if nargin<3
+    if nargin==1, age_yr=1; end
+    fp_version='BrO_back_runs_v2';
+end
 
 if ~any(age_yr==[0,1,2,20])
     error('Valid SI age indices are 0,1,2, and 20')
@@ -56,7 +60,7 @@ lon_age=lon_age';
 
 % need to load *__weekly_data, with total sensitivities calculated not only for
 % each run, but for each week as well if run stretches across two weeks
-load(['/home/kristof/berg/FLEXPART_10.02/BrO_back_runs_v1/BrO_back_runs_v1_'...
+load(['/home/kristof/berg/FLEXPART_10.02/' fp_version '/' fp_version '_'...
       num2str(bt_len) 'day__weekly_sum.mat'])
 % load fine flexpart grid
 load('/home/kristof/berg/FLEXPART_10.02/grid_data/fine_FLEXPART_grid.mat')
@@ -66,7 +70,11 @@ load('/home/kristof/berg/FLEXPART_10.02/grid_data/fine_FLEXPART_grid.mat')
 load('/home/kristof/berg/FLEXPART_10.02/grid_data/FP_fine_mask.mat')
 
 % flexpart times
-load('/home/kristof/berg/FLEXPART_10.02/BrO_back_runs_v1/flexpart_times_2015-2019.mat')
+if strcmp(fp_version, 'BrO_back_runs_v1')
+    load('/home/kristof/berg/FLEXPART_10.02/BrO_back_runs_v1/flexpart_times_2015-2019.mat')
+elseif strcmp(fp_version, 'BrO_back_runs_v2')
+    load('/home/kristof/berg/FLEXPART_10.02/BrO_back_runs_v2/flexpart_times_2016-2019.mat')
+end
 
 % convert to 0-360, east of Greenwich
 longitude(longitude<0)=longitude(longitude<0)+360;
@@ -144,13 +152,16 @@ for i=1:size(sens_info,1)
     
     % select only mask indices that appear in SI_age_inds_current
     SI_contact_mask=ismember(mask_lin,SI_age_inds_current);
-    % select only nonzero sensitivities
-    error('removing zero elements not essential, fix bugs if it''s to be included')
-    %#244 nonzero=sens_lin>0; % can only remove zeros if entilre SI grid cell is 0!!
-
+    
+    % % select only nonzero sensitivities
+    % error('removing zero elements not essential, fix bugs if it''s to be included')
+    % nonzero=sens_lin>0; % can only remove zeros if entilre SI grid cell is 0!!
     % reduce arrays to selected elements
-    mask_lin=mask_lin(SI_contact_mask & nonzero);
-    sens_lin=sens_lin(SI_contact_mask & nonzero);
+    % mask_lin=mask_lin(SI_contact_mask & nonzero);
+    % sens_lin=sens_lin(SI_contact_mask & nonzero);
+    
+    mask_lin=mask_lin(SI_contact_mask);
+    sens_lin=sens_lin(SI_contact_mask);
     
     if ~isempty(sens_lin)
 

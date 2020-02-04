@@ -30,7 +30,7 @@ cutoff=0;
 % results are the same)
 copy_old=1;
 old_dir='BrO_back_runs_v1/';
-fp_dir='/home/kristof/berg/FLEXPART_10.02/';
+p_dir='/home/kristof/berg/FLEXPART_10.02/';
 
 %% find meean times, along with start/end of time interval
 % mean time is used as the time the back trajectory arrives in Eureka

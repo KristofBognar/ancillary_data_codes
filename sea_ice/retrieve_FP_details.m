@@ -11,6 +11,7 @@ function data_out = retrieve_FP_details( data_type, prof_times, bt_len, interp_t
 %       'traj_hmix': back trajectory mean mix layer height
 %       'traj_fmix: back trajectory mean fraction of particles in mixed layer
 %       'SI_approx': SI contact, mean over all SI areas * number of cells
+%                    (v1 runs only)
 %       'SI_exact': SI contact, sum of the means in individual SI cells
 %
 %       Data type can be any per trajectory detail for the FLEXPART
@@ -29,11 +30,11 @@ function data_out = retrieve_FP_details( data_type, prof_times, bt_len, interp_t
 %                 slopes)
 %   surf_type: 'FYSI', 'MYSI', 'water', 'land' (only for data_type=SI_*)
 %
-% OUTPUT: interpolated data, same size as prof_times
+% OUTPUT: interpolated data, same size as prof_times. If sea ice file is
+%         missing, returns all NaNs
 %
 %@Kristof Bognar, 2019
-%@Kristof Bognar, 2020: modified to be more general instead of focusing
-%                        on SI contact
+%@Kristof Bognar, 2020: modified to be more general instead of focusing on SI contact
 
 
 %% load data
@@ -43,9 +44,17 @@ if strcmp(data_type(1:2),'SI')
     si_file=['FP_' surf_type '_contact_' num2str(bt_len) 'day.mat'];
 
     if strcmp(data_type,'SI_exact')
-        load(['/home/kristof/work/BEEs/flexpart_SI_contact/' si_file]);
+        % try to load file, return NaNs is missing
+        try
+            load(['/home/kristof/work/BEEs/flexpart_SI_contact/' si_file]);
+        catch
+            data_out=NaN(size(prof_times));
+            return
+        end
+        
     elseif strcmp(data_type,'SI_approx')
-        load(['/home/kristof/work/BEEs/flexpart_SI_contact/approximate/' si_file]);
+        error('SI_approx optin only available for v1 FLEXPART runs')
+%         load(['/home/kristof/work/BEEs/flexpart_SI_contact/approximate/' si_file]);
     end
     
     times_in=FP_SI_contact;

@@ -14,10 +14,10 @@ if nargin==0
 end
 
 % load saved flexpart data (use max length)
-load(['/home/kristof/berg/FLEXPART_10.02/BrO_back_runs_v1/BrO_back_runs_v1_5day.mat'])
+load(['/home/kristof/berg/FLEXPART_10.02/BrO_back_runs_v2/BrO_back_runs_v2_5day.mat'])
 
 % flexpart times
-load('/home/kristof/berg/FLEXPART_10.02/BrO_back_runs_v1/flexpart_times_2015-2019.mat')
+load('/home/kristof/berg/FLEXPART_10.02/BrO_back_runs_v2/flexpart_times_2016-2019.mat')
 
 % % set trajectory time required (days)
 % time_lim=3;

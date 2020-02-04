@@ -28,9 +28,11 @@ if nargin==1, do_weekly=0; end
 
 % data folders
 flex_dir='/home/kristof/atmosp_servers/export/data/home/kbognar/FLEXPART_10.02/';
-flex_folder='BrO_back_runs_v1';
+% flex_folder='BrO_back_runs_v1';
+flex_folder='BrO_back_runs_v2';
 
 cd([flex_dir flex_folder]);
+disp(['Reading data from ' flex_folder])
 
 % get directory list
 tmp = dir('out_*'); 
