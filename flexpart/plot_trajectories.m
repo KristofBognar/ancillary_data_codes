@@ -2,7 +2,7 @@
 %% control variables
 read_backrun=0;
 
-time_lim=3;
+time_lim=5;
 
 plot_traj=1;
 plot_sens=1;
@@ -22,7 +22,7 @@ load coast;
 wdir_key={'Wind: \bf{N}','Wind: \bf{SE}','Wind: \bf{other}'};
 
 flex_dir='/home/kristof/atmosp_servers/export/data/home/kbognar/FLEXPART_10.02/';
-flex_folder='BrO_back_runs_v1';
+flex_folder='BrO_back_runs_v2';
     
 cur_dir=pwd();
 cd([flex_dir flex_folder]);
@@ -33,22 +33,27 @@ if ~read_backrun
     load('/home/kristof/work/BEEs/BEE_dataset_flexpart.mat')
     load([flex_folder '_' num2str(time_lim) 'day.mat']);
     
-    
     %% plotting indices (use logical so dimensions are always the same)
-    p1=(bee_fp.wdir==1 & bee_fp.bro_m==2); % N winds and above average BrO cols
-    p2=(bee_fp.wdir==2 & bee_fp.bro_m==2); % SE winds and above average BrO cols
-    p3=(bee_fp.wdir==3 & bee_fp.bro_m==2); % other winds and above average BrO cols
+    % fraction of MYI contact
+%     frac_myi=bee_fp.MYSI_5day./(bee_fp.FYSI_5day+bee_fp.MYSI_5day);
+    frac_myi=bee_fp.MYSI_3day./(bee_fp.FYSI_3day+bee_fp.MYSI_3day);
+
+%     p1=(bee_fp.wdir==1 & bee_fp.bro_m==2); % N winds and above average BrO cols
+%     p2=(bee_fp.wdir==2 & bee_fp.bro_m==2); % SE winds and above average BrO cols
+%     p3=(bee_fp.wdir==3 & bee_fp.bro_m==2); % other winds and above average BrO cols
     p4=(bee_fp.dT==1); % strong/weak T inversion
     %p4=(bee_fp.ssa_m==2 & bee_fp.bro_m==2); % all winds and above average supermicron aer
     %p4=(bee_fp.bro_m==1); % all winds and below average BrO cols
 
+    p1=(bee_fp.wdir==1 & frac_myi>0.9 & bee_fp.mix_height_3day<200); 
+    p2=(bee_fp.wdir==2 & frac_myi>0.9 & bee_fp.mix_height_3day<200); 
+    p3=(bee_fp.wdir==3 & frac_myi>0.9 & bee_fp.mix_height_3day<200); 
+    
 %     p1=(bee_fp.o3==1); % o3 < 5 (ppb)
 %     p2=(bee_fp.o3==2); % 5 <= o3 < 10 
 %     p3=(bee_fp.o3==3); % 10 <= o3 < 20 
 %     p4=(bee_fp.o3==4); % 20 <= o3 
     
-    
-
     
     plot_ind=[p1,p2,p3,p4];
              

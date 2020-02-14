@@ -14,7 +14,7 @@ function get_SI_contact(bt_len,age_yr,fp_version)
 %          20 -- land (using land mask in SI age data)
 %        fp_version: folder name of current FLEXPART run version (e.g. 'BrO_back_runs_v2')
 %
-% OUTPUT: file with vector of contact times in s m^2, corresponding to the
+% OUTPUT: file with vector of contact times in seconds, corresponding to the
 %         number of FLEXPART runs. Naming is FYSI, MYSI, water, and land,
 %         corresponding to the indices above
 %
