@@ -35,8 +35,8 @@ if ~read_backrun
     
     %% plotting indices (use logical so dimensions are always the same)
     % fraction of MYI contact
-%     frac_myi=bee_fp.MYSI_5day./(bee_fp.FYSI_5day+bee_fp.MYSI_5day);
-    frac_myi=bee_fp.MYSI_3day./(bee_fp.FYSI_3day+bee_fp.MYSI_3day);
+    frac_myi=bee_fp.MYSI_5day./(bee_fp.FYSI_5day+bee_fp.MYSI_5day);
+%     frac_myi=bee_fp.MYSI_3day./(bee_fp.FYSI_3day+bee_fp.MYSI_3day);
 
 %     p1=(bee_fp.wdir==1 & bee_fp.bro_m==2); % N winds and above average BrO cols
 %     p2=(bee_fp.wdir==2 & bee_fp.bro_m==2); % SE winds and above average BrO cols
@@ -45,9 +45,9 @@ if ~read_backrun
     %p4=(bee_fp.ssa_m==2 & bee_fp.bro_m==2); % all winds and above average supermicron aer
     %p4=(bee_fp.bro_m==1); % all winds and below average BrO cols
 
-    p1=(bee_fp.wdir==1 & frac_myi>0.9 & bee_fp.mix_height_3day<200); 
-    p2=(bee_fp.wdir==2 & frac_myi>0.9 & bee_fp.mix_height_3day<200); 
-    p3=(bee_fp.wdir==3 & frac_myi>0.9 & bee_fp.mix_height_3day<200); 
+    p1=(bee_fp.wdir==1 & frac_myi>0.9 & bee_fp.mix_height_5day<290); 
+    p2=(bee_fp.wdir==2 & frac_myi>0.9 & bee_fp.mix_height_5day<290); 
+    p3=(bee_fp.wdir==3 & frac_myi>0.9 & bee_fp.mix_height_5day<290); 
     
 %     p1=(bee_fp.o3==1); % o3 < 5 (ppb)
 %     p2=(bee_fp.o3==2); % 5 <= o3 < 10 
