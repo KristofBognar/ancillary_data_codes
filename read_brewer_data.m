@@ -1,5 +1,5 @@
 function read_brewer_data( bw_num )
-%READ_BREWER_DATA Summary of this function goes here
+%READ_BREWER_DATA 
 %   Read brewer data from daily text files provided by ECCC
 %   File format is similar to ozonesodes -- reuse some code from
 %   read_ozonesonde.m
@@ -68,7 +68,7 @@ for i=1:length(yr_list)
 end
 
 % save results
-save([savedir 'brewer_' num2str(bw_num) '_all.mat'],'brewer_ds','brewer_zs','brewer_uv');
+save([savedir 'brewer' num2str(bw_num) '_' yr_list{1} '-' yr_list{end} '.mat'],'brewer_ds','brewer_zs','brewer_uv');
 
 fprintf('\n')
 
@@ -152,12 +152,12 @@ data = table(dataArray{1:end-1}, 'VariableNames', header_line);
 %% add date and convert to UTC
 time_line=strsplit(char(time_line),',');
 
+% add date
+data.DateTime=datetime(time_line{2}, 'InputFormat', 'yyyy-MM-dd')+timeofday(data.DateTime);
+
 % need to subtract UTC offset (offset is negative)
 % can only convert positive time to datetime; add abs value of time offset 
 data.DateTime=data.DateTime+timeofday(datetime(time_line{1}(2:end), 'InputFormat', 'HH:mm:ss'));
-
-% add date
-data.DateTime=datetime(time_line{2}, 'InputFormat', 'yyyy-MM-dd')+timeofday(data.DateTime);
 
 data.DateTime.Format='dd/MM/uuuu HH:mm:ss';
 
