@@ -93,7 +93,8 @@ fig_ax = tight_subplot(2,2,[0.09,0.07],[0.08,0.08],[0.08,0.06]);
 % BrO vs interpolated PAX data
 axes(fig_ax(1))
 tmp=interp1(pax405.DateTime,pax405.BC_mass_conc,bee_dataset.times);
-ind=(~isnan(tmp) & bee_dataset.N_SE_rest==2);
+ind=~isnan(tmp);
+% ind=(~isnan(tmp) & bee_dataset.N_SE_rest==3);
 dscatter(tmp(ind),bee_dataset.bro_col(ind)), hold on
 xlim([-0.1,0.25])
 ylim([0,8]*1e13)
@@ -112,8 +113,8 @@ legend('Normalized density','BrO, PAX medians')
 
 axes(fig_ax(2))
 tmp=interp1(pax870.DateTime,pax870.BC_mass_conc,bee_dataset.times);
-% ind=~isnan(tmp);
-ind=(~isnan(tmp) & bee_dataset.N_SE_rest==2);
+ind=~isnan(tmp);
+% ind=(~isnan(tmp) & bee_dataset.N_SE_rest==3);
 dscatter(tmp(ind),bee_dataset.bro_col(ind)), hold on
 xlim([-0.1,0.25])
 ylim([0,8]*1e13)
